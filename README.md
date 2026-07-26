@@ -1,46 +1,28 @@
 # EmployeeHub
 
-A production-inspired microservices project built to gain hands-on experience with Apache Kafka, Event-Driven Architecture, the Transactional Outbox Pattern, and Debezium using Spring Boot.
+A production-inspired Spring Boot microservices project built to gain hands-on experience with Apache Kafka and modern event-driven architecture patterns used in enterprise applications.
 
-The goal of this project is not to build another CRUD application, but to understand how modern distributed systems exchange data reliably without tight coupling.
-
----
-
-## Project Goal
-
-This repository documents my journey of learning and implementing enterprise messaging patterns used in modern backend systems.
-
-Topics covered include:
-
-- Event-Driven Architecture (EDA)
-- Apache Kafka
-- Transactional Outbox Pattern
-- Debezium Change Data Capture (CDC)
-- Kafka Connect
-- Spring Boot Microservices
-- Docker Compose
-- PostgreSQL
-- JWT Authentication & Authorization
+The primary objective of this project is to understand how distributed systems communicate reliably using Apache Kafka, the Transactional Outbox Pattern, Debezium Change Data Capture (CDC), and asynchronous messaging while following clean microservices architecture principles.
 
 ---
 
 ## Architecture
 
-```
+```text
                     ┌────────────────────┐
                     │    Auth Service    │
-                    │ Spring Boot        │
+                    │   Spring Boot      │
                     └─────────┬──────────┘
                               │
-                    Save User + Outbox Event
+                  Save User + Outbox Event
                               │
                               ▼
-                     PostgreSQL Database
+                        PostgreSQL
                               │
-                    WAL (Write Ahead Log)
+                     Write Ahead Log (WAL)
                               │
                               ▼
-                         Debezium CDC
+                      Debezium Connector
                               │
                               ▼
                         Kafka Connect
@@ -54,44 +36,63 @@ Topics covered include:
 
 ---
 
-## Microservices
+## Project Goals
+
+This repository is focused on understanding and implementing production-grade backend concepts rather than building a traditional CRUD application.
+
+Key learning objectives include:
+
+- Event-Driven Architecture
+- Apache Kafka
+- Transactional Outbox Pattern
+- Debezium Change Data Capture (CDC)
+- Kafka Connect
+- Spring Boot Microservices
+- JWT Authentication
+- Dockerized Development Environment
+- Reliable Asynchronous Communication
+
+---
+
+## Services
 
 ### Auth Service
 
-Responsibilities
+Responsible for
 
 - User Registration
-- User Login
-- JWT Authentication
+- User Authentication
+- JWT Token Generation
 - Password Encryption
-- Store Outbox Events
-- Publish Domain Events using Debezium
+- Transactional Outbox Pattern
+- Publishing Domain Events through Debezium
 
 ---
 
 ### Notification Service
 
-Responsibilities
+Responsible for
 
-- Consume Kafka Events
-- Process User Registration Events
-- Send Notifications (Upcoming)
-- Email Integration (Upcoming)
+- Consuming Kafka Events
+- Processing User Registration Events
+- Notification Workflow
+
+> Email integration and additional notification channels will be implemented in upcoming iterations.
 
 ---
 
 ## Infrastructure
 
-Docker Compose provisions
+The project uses Docker Compose to provision the complete local development environment.
 
 - PostgreSQL
 - Apache Kafka (KRaft Mode)
 - Kafka Connect
-- Debezium Connector
+- Debezium PostgreSQL Connector
 
 ---
 
-## Tech Stack
+## Technology Stack
 
 ### Backend
 
@@ -120,30 +121,25 @@ Docker Compose provisions
 
 ---
 
-## Enterprise Concepts Implemented
+## Enterprise Concepts Demonstrated
 
 - Microservices Architecture
-- Event-Driven Communication
+- Event-Driven Architecture
 - Transactional Outbox Pattern
 - Change Data Capture (CDC)
+- Domain Events
 - Loose Coupling
 - Asynchronous Messaging
 - JWT Authentication
 - Database Transactions
-- Domain Events
 
 ---
 
 ## Why Transactional Outbox?
 
-Instead of directly publishing Kafka messages from the application, events are first written into an Outbox table within the same database transaction.
+Instead of publishing Kafka messages directly from the application, business events are first stored in an Outbox table within the same database transaction.
 
-Benefits:
-
-- Prevents the Double Write Problem
-- Guarantees data consistency
-- Reliable event publishing
-- Common enterprise architecture pattern
+This approach helps eliminate the Double Write Problem by ensuring both the business data and the event are committed atomically.
 
 ---
 
@@ -151,18 +147,18 @@ Benefits:
 
 Debezium continuously monitors PostgreSQL's Write Ahead Log (WAL).
 
-Whenever a new Outbox record is inserted:
+Whenever a new Outbox record is committed:
 
 1. Debezium detects the database change.
-2. Kafka Connect receives the change.
-3. Kafka Connect publishes the event to Kafka.
-4. Consumer microservices receive the event.
+2. Kafka Connect captures the event.
+3. Kafka Connect publishes the event to Apache Kafka.
+4. Consumer microservices receive the event asynchronously.
 
-The application never needs to publish Kafka messages directly.
+This allows services to publish domain events without directly interacting with Kafka producers.
 
 ---
 
-## Learning Roadmap
+## Current Progress
 
 ### Completed
 
@@ -172,7 +168,7 @@ The application never needs to publish Kafka messages directly.
 - Dockerized Infrastructure
 - Apache Kafka Setup
 - Kafka Connect
-- Debezium
+- Debezium CDC
 - Transactional Outbox Pattern
 
 ### In Progress
@@ -183,36 +179,20 @@ The application never needs to publish Kafka messages directly.
 
 ### Planned
 
-- Retry Mechanism
 - Dead Letter Queue (DLQ)
+- Retry Mechanism
 - Idempotent Consumers
-- Observability
-- OpenTelemetry
-- Resilience4j
 - API Gateway
 - Service Discovery
+- Resilience4j
+- OpenTelemetry
 - Kubernetes Deployment
-
----
-
-## Running the Project
-
-```bash
-docker compose up -d
-```
-
-Start services
-
-```bash
-auth-service
-notification-service
-```
 
 ---
 
 ## Repository Structure
 
-```
+```text
 EmployeeHub
 │
 ├── auth-service
@@ -223,10 +203,35 @@ EmployeeHub
 
 ---
 
+## Running the Project
+
+Start the infrastructure:
+
+```bash
+docker compose up -d
+```
+
+Run the microservices:
+
+```text
+auth-service
+notification-service
+```
+
+---
+
 ## Purpose
 
-This repository is built as a learning project to understand enterprise backend architecture beyond CRUD applications.
+This repository serves as a hands-on learning project for exploring enterprise backend architecture and messaging systems using Spring Boot and Apache Kafka.
 
-The focus is on implementing production-inspired messaging patterns and gaining practical experience with technologies commonly used in distributed systems.
+The implementation emphasizes reliability, scalability, and production-inspired design patterns commonly used in modern distributed systems.
 
-Contributions, suggestions, and feedback are always welcome.
+---
+
+## Copyright
+
+© 2026 Gurinder Singh. All rights reserved.
+
+This repository is provided for portfolio and educational purposes.
+
+Unauthorized redistribution, commercial use, or reproduction of this project without permission is prohibited.
