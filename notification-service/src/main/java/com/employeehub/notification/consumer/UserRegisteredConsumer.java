@@ -24,11 +24,24 @@ public class UserRegisteredConsumer {
             UserRegisteredEvent event,
             @Header(KafkaHeaders.RECEIVED_KEY) String key) {
 
-        log.info(
-                "Received UserRegisteredEvent: key={}, eventId={}, userId={}",
-                key,
+        log.info("""
+                
+                ╔══════════════════════════════════════════════════════════════╗
+                ║              USER REGISTERED EVENT RECEIVED                 ║
+                ╠══════════════════════════════════════════════════════════════╣
+                ║ Event ID : {} 
+                ║ User ID  : {}
+                ║ Name     : {}
+                ║ Email    : {}
+                ║ Topic    : employeehub.USER
+                ║ Key      : {}
+                ╚══════════════════════════════════════════════════════════════╝
+                """,
                 event.getEventId(),
-                event.getUserId()
+                event.getUserId(),
+                event.getFullName(),
+                event.getEmail(),
+                key
         );
 
         notificationService.sendWelcomeNotification(event);

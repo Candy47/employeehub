@@ -12,11 +12,33 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendWelcomeNotification(UserRegisteredEvent event) {
 
-        log.info(
-                "Sending welcome notification to userId={}, email={}, name={}",
+        log.info("""
+            
+            ────────────────────────────────────────────────────────────────
+                     PROCESSING USER REGISTRATION EVENT
+            ────────────────────────────────────────────────────────────────
+            Event ID : {}
+            Email    : {}
+            """,
+                event.getEventId(),
+                event.getEmail()
+        );
+
+        if (event.getEmail().contains("fail")) {
+            throw new RuntimeException("Simulated notification failure");
+        }
+
+        log.info("""
+            
+            ✅ EVENT PROCESSED SUCCESSFULLY
+            
+            User ID : {}
+            Name    : {}
+            Email   : {}
+            """,
                 event.getUserId(),
-                event.getEmail(),
-                event.getFullName()
+                event.getFullName(),
+                event.getEmail()
         );
     }
 }
