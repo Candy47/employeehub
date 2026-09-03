@@ -181,13 +181,55 @@ EmployeeHub
 
 # Running the Project
 
-Start the infrastructure
+### 1. Start the infrastructure (once)
+
+Kept separate so it stays up while you restart your services freely:
 
 ```bash
-docker compose up -d
+docker compose -f infrastructure/docker-compose.yml up -d
 ```
 
-Run the services
+### 2. Run both services with one script
+
+`run.ps1` launches **auth-service** and **notification-service**, each in its
+**own window** so every service has its own live logs. It also points
+`JAVA_HOME` at JDK 21 (the version the project targets).
+
+```powershell
+./run.ps1
+```
+
+Each window ends with a clear banner showing where the service is running:
+
+```
+==============================================================
+   AUTH-SERVICE is UP and running
+--------------------------------------------------------------
+   Local     : http://localhost:8080
+   Actuator  : http://localhost:8080/actuator
+==============================================================
+```
+
+> PowerShell 7+ runs on macOS and Linux too, so the same script works there.
+
+### Health checks
+
+| Service | Health URL |
+| --- | --- |
+| auth-service | http://localhost:8080/api/v1/health |
+| auth-service (actuator) | http://localhost:8080/actuator/health |
+| notification-service | http://localhost:8081/actuator/health |
+
+### Stopping
+
+- Close a service's window (or press **Ctrl+C** in it) to stop that service.
+- Stop the infrastructure when you're done:
+
+```bash
+docker compose -f infrastructure/docker-compose.yml down
+```
+
+### Run services manually (optional)
 
 ```bash
 # Terminal 1
