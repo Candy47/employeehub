@@ -19,6 +19,8 @@ services:
 
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      # Creates the per-service databases (employee_db) on first init.
+      - ./init-db:/docker-entrypoint-initdb.d
 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d auth_db"]

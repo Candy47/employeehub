@@ -12,3 +12,9 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Maven build output (covers all modules, incl. new ones without their own .gitignore)
+target/
+
+# Misc
+.npmrc

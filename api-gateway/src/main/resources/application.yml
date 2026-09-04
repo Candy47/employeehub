@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      # CORS so a browser frontend on another origin can call the gateway
+      # WITH cookies (credentials). Origins must be explicit (not "*") when
+      # credentials are allowed.
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:4200"   # Angular dev server
+              - "http://localhost:3000"   # React / Next.js dev server
+              - "http://localhost:5173"   # Vite dev server
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+            maxAge: 3600
+
+      routes:
+        # Public auth endpoints (login/register) + auth's own /me.
+        - id: auth-service
+          uri: http://localhost:8080
+          predicates:
+            - Path=/api/v1/auth/**
+
+        # Protected employee APIs - gateway validates the JWT and forwards
+        # the identity via the X-Auth-User header.
+        - id: employee-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/v1/employees/**
+
+        # Protected audit / event-log API.
+        - id: audit-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/v1/audit/**
+
+server:
+  port: 8090
+
+# Expose actuator health for the gateway itself.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(%-5p) %clr(%-36.36logger{35}){cyan} %clr(:){faint} %m%n"
+
+
+
+
+
+
